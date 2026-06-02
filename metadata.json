@@ -1,0 +1,6 @@
+{
+  "name": "Personal Landing Page",
+  "description": "An elegant, minimalist personal landing page in an Old Money aesthetic with a secure Telegram messaging portal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

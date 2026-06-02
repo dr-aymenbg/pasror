@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Inter", sans-serif;
+  
+  --color-gold-light: #DFCDB2;
+  --color-gold-classic: #B08D57;
+  --color-gold-dark: #8E7245;
+  --color-dark-base: #0A0A0A;
+  --color-dark-paper: #0E0E0E;
+  --color-dark-border: #151515;
+  --color-dark-border-light: #1A1A1A;
+  --color-dark-line: #2A2A2A;
+  --color-navy-old: #0F161E;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-dark-base);
+  color: #E5E5E5;
+}
+
+@utility animate-spin-slow {
+  animation: spin 30s linear infinite;
+}
+
+@utility animate-shine {
+  animation: shine 1.8s ease-in-out infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-150%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(250%) skewX(-12deg);
+  }
+}
