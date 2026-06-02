@@ -16,11 +16,11 @@ export default function App() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSend = async (e: FormEvent) => {
+const handleSend = async (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !message.trim()) {
       setStatus("error");
-      setErrorMessage("Please fill out both fields before transmitting.");
+      setErrorMessage("Please fill out both fields.");
       return;
     }
 
@@ -28,31 +28,33 @@ export default function App() {
     setErrorMessage("");
 
     try {
-      const response = await fetch("/api/send-message", {
+      const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json",
         },
-        body: JSON.stringify({ name: name.trim(), message: message.trim() }),
+        body: JSON.stringify({
+          access_key: "e219b3bf-1f47-4308-ba7f-0d54a143c844",
+          name: name,
+          message: message,
+        }),
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      const result = await response.json();
+      if (result.success) {
         setStatus("success");
         setName("");
         setMessage("");
       } else {
         setStatus("error");
-        setErrorMessage(data.error || "The message could not be sent. Please retry.");
+        setErrorMessage("Something went wrong.");
       }
     } catch (error) {
-      console.error(error);
       setStatus("error");
-      setErrorMessage("Connection failed. Please verify your internet or try again later.");
+      setErrorMessage("Connection failed.");
     }
   };
-
   return (
     <div className="min-h-screen flex flex-col justify-between selection:bg-gold-classic/30 selection:text-white bg-[#0A0A0A] text-[#E5E5E5] relative overflow-hidden font-sans border-[8px] md:border-[16px] border-[#151515]">
       
