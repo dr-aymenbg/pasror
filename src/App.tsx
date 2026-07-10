@@ -7,7 +7,9 @@ import {
   AlertCircle, 
   User, 
   MessageSquare,
-  Search
+  Search,
+  Copy,
+  Check
 } from "lucide-react";
 
 export default function App() {
@@ -16,11 +18,22 @@ export default function App() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [copied, setCopied] = useState(false);
+  
+  // لحفظ الكود الذي تم إنشاؤه وإظهاره للمستخدم
+  const [generatedCode, setGeneratedCode] = useState("");
 
   // حالات نظام تتبع الردود
   const [trackCode, setTrackCode] = useState("");
   const [trackStatus, setTrackStatus] = useState<"idle" | "searching" | "found" | "notFound">("idle");
   const [adminReply, setAdminReply] = useState("");
+
+  // دالة نسخ الكود
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   // دالة إرسال الرسالة إلى Supabase
   const handleSend = async (e: FormEvent) => {
@@ -34,6 +47,9 @@ export default function App() {
     setStatus("submitting");
     setErrorMessage("");
 
+    // توليد كود التتبع أولاً لحفظه وإظهاره للمستخدم
+    const newTrackingCode = "PRESTIGE-" + Math.floor(10000 + Math.random() * 90000);
+
     try {
       const response = await fetch("https://azbgzkuykdzjoqftpba.supabase.co/rest/v1/messages", {
         method: "POST",
@@ -45,11 +61,12 @@ export default function App() {
         body: JSON.stringify({
           name: name,
           message: message,
-          tracking_code: "PRESTIGE-" + Math.floor(10000 + Math.random() * 90000),
+          tracking_code: newTrackingCode,
         }),
       });
 
       if (response.ok) {
+        setGeneratedCode(newTrackingCode); // حفظ الكود لعرضه
         setStatus("success");
         setName("");
         setMessage("");
@@ -102,15 +119,9 @@ export default function App() {
         </svg>
       </div>
 
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 p-8 opacity-[0.015] pointer-events-none">
-        <svg width="180" height="180" viewBox="0 0 100 100" fill="currentColor" className="text-white">
-          <path d="M50 0 L61 39 L100 50 L61 61 L50 100 L39 61 L0 50 L39 39 Z" />
-        </svg>
-      </div>
-
       <div className="absolute top-4 left-4 right-4 bottom-4 border border-gold-classic/5 pointer-events-none" />
 
-      {/* العلامات المائية في الزوايا */}
+      {/* العلامات المائية */}
       <div className="absolute top-8 left-8 hidden md:flex items-center gap-3 text-[9px] tracking-[0.3em] uppercase font-serif text-gold-classic/50 pointer-events-none">
         <Compass size={11} className="text-[#B08D57]" />
         <span>Private Message Server</span>
@@ -166,12 +177,29 @@ export default function App() {
 
             <AnimatePresence mode="wait">
               {status === "success" ? (
-                <motion.div key="success" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-6 text-center flex flex-col items-center space-y-4">
+                <motion.div key="success" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-4 text-center flex flex-col items-center space-y-4">
                   <div className="w-12 h-12 bg-[#151515] border border-[#B08D57]/30 rounded-full flex items-center justify-center text-[#B08D57]">
                     <CheckCircle2 size={24} strokeWidth={1} />
                   </div>
                   <p className="font-serif text-lg text-[#F5F5F5]">Inquiry Safely Conveyed</p>
-                  <button onClick={() => setStatus("idle")} className="px-4 py-2 border border-[#B08D57] text-[#B08D57] text-[9px] tracking-widest uppercase hover:bg-[#B08D57] hover:text-black transition-all">
+                  
+                  {/* عرض كود التتبع الجديد للمرسل لنسخه */}
+                  <div className="w-full bg-[#050505] border border-[#202020] p-4 my-2 text-center space-y-2">
+                    <p className="text-[9px] uppercase tracking-widest text-[#B08D57]">Your Private Tracking Code:</p>
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="font-mono text-base tracking-wider text-white select-all">{generatedCode}</span>
+                      <button 
+                        onClick={() => copyToClipboard(generatedCode)}
+                        className="p-1 hover:text-[#B08D57] text-neutral-500 transition-colors"
+                        title="Copy Code"
+                      >
+                        {copied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
+                      </button>
+                    </div>
+                    <p className="text-[8px] text-neutral-500 italic">Save this code to check for Dr-Aymen's response later.</p>
+                  </div>
+
+                  <button onClick={() => setStatus("idle")} className="px-4 py-2 border border-[#B08D57]/40 text-[#B08D57] text-[9px] tracking-widest uppercase hover:bg-[#B08D57] hover:text-black transition-all">
                     Send Another Note
                   </button>
                 </motion.div>
@@ -207,9 +235,9 @@ export default function App() {
               )}
             </AnimatePresence>
           </div>
-                    </motion.div>
+        </motion.div>
 
-        {/* 2. بطاقة تتبع الردود المحدثة بالمفتاح الصحيح */}
+        {/* 2. بطاقة تتبع الردود */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
