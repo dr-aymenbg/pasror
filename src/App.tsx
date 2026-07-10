@@ -1,4 +1,3 @@
-
 import { useState, FormEvent } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
@@ -10,6 +9,8 @@ import {
   User, 
   MessageSquare
 } from "lucide-react";
+// هذا السطر يستدعي ملف الاتصال بقاعدة البيانات
+import { supabase } from "./supabaseClient"; 
 
 export default function App() {
   const [name, setName] = useState("");
@@ -17,7 +18,7 @@ export default function App() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-const handleSend = async (e: FormEvent) => {
+  const handleSend = async (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !message.trim()) {
       setStatus("error");
@@ -29,6 +30,7 @@ const handleSend = async (e: FormEvent) => {
     setErrorMessage("");
 
     try {
+      // 1. الإرسال إلى الإيميل (Web3Forms)
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
@@ -43,23 +45,29 @@ const handleSend = async (e: FormEvent) => {
       });
 
       const result = await response.json();
-      if (result.success) {
+
+      // 2. حفظ نسخة في قاعدة البيانات (Supabase)
+      const { error: dbError } = await supabase
+        .from('messages')
+        .insert([{ name, message }]);
+
+      if (result.success && !dbError) {
         setStatus("success");
         setName("");
         setMessage("");
       } else {
         setStatus("error");
-        setErrorMessage("Something went wrong.");
+        setErrorMessage("Something went wrong with the transmission.");
       }
     } catch (error) {
       setStatus("error");
       setErrorMessage("Connection failed.");
     }
   };
+
   return (
     <div className="min-h-screen flex flex-col justify-between selection:bg-gold-classic/30 selection:text-white bg-[#0A0A0A] text-[#E5E5E5] relative overflow-hidden font-sans border-[8px] md:border-[16px] border-[#151515]">
       
-      {/* Exquisite starry background graphic element from the design */}
       <div className="absolute top-0 right-0 p-8 md:p-16 opacity-[0.03] pointer-events-none">
         <svg width="240" height="240" viewBox="0 0 100 100" fill="currentColor" className="text-white">
           <path d="M50 0 L61 39 L100 50 L61 61 L50 100 L39 61 L0 50 L39 39 Z" />
@@ -72,10 +80,8 @@ const handleSend = async (e: FormEvent) => {
         </svg>
       </div>
 
-      {/* Classical vintage accent border details */}
       <div className="absolute top-4 left-4 right-4 bottom-4 border border-gold-classic/5 pointer-events-none" />
 
-      {/* Subtle classical watermarks in corners */}
       <div className="absolute top-8 left-8 hidden md:flex items-center gap-3 text-[9px] tracking-[0.3em] uppercase font-serif text-gold-classic/50 pointer-events-none">
         <Compass size={11} className="animate-spin-slow text-[#B08D57]" />
         <span>Private Message Server</span>
@@ -84,10 +90,8 @@ const handleSend = async (e: FormEvent) => {
         <span>EST. 2026 / PRESTIGE SECURE</span>
       </div>
 
-      {/* Header section (The Crest & Minimal Title) */}
       <header className="pt-16 md:pt-24 px-6 text-center z-10">
         <div className="inline-flex flex-col items-center">
-          {/* Elegant Crest */}
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -98,7 +102,6 @@ const handleSend = async (e: FormEvent) => {
             <span className="font-serif text-sm tracking-wider text-[#B08D57] font-light">DA</span>
           </motion.div>
 
-          {/* VANE & CO. level brand title */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -119,7 +122,6 @@ const handleSend = async (e: FormEvent) => {
         </div>
       </header>
 
-      {/* Main Correspondence Form Area */}
       <main className="flex-grow flex items-center justify-center px-6 py-12 z-10 w-full max-w-lg mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -127,7 +129,6 @@ const handleSend = async (e: FormEvent) => {
           transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
           className="w-full bg-[#0E0E0E] border border-[#1A1A1A] shadow-2xl p-8 md:p-12 relative rounded-none"
         >
-          {/* Deluxe thin interior accent border to double down on craft elegance */}
           <div className="absolute inset-[4px] border border-[#1A1A1A]/50 pointer-events-none" />
 
           <div className="relative z-10">
@@ -181,18 +182,10 @@ const handleSend = async (e: FormEvent) => {
                   onSubmit={handleSend}
                   className="space-y-10"
                 >
-                  {/* Name field (High elegance border-b style) */}
                   <div className="relative border-b border-[#2A2A2A] pb-3 group focus-within:border-[#B08D57] transition-colors duration-400">
-                    <label 
-                      htmlFor="name" 
-                      className="block font-sans text-[9px] uppercase tracking-[0.3em] mb-4 text-[#B08D57] opacity-65 font-medium"
-                    >
-                      Full Name
-                    </label>
+                    <label htmlFor="name" className="block font-sans text-[9px] uppercase tracking-[0.3em] mb-4 text-[#B08D57] opacity-65 font-medium">Full Name</label>
                     <div className="flex items-center gap-3">
-                      <div className="text-[#B08D57]/50 mt-0.5">
-                        <User size={14} strokeWidth={1.5} />
-                      </div>
+                      <div className="text-[#B08D57]/50 mt-0.5"><User size={14} strokeWidth={1.5} /></div>
                       <input
                         id="name"
                         type="text"
@@ -206,18 +199,10 @@ const handleSend = async (e: FormEvent) => {
                     </div>
                   </div>
 
-                  {/* Message field (High elegance border-b style) */}
                   <div className="relative border-b border-[#2A2A2A] pb-3 group focus-within:border-[#B08D57] transition-colors duration-400">
-                    <label 
-                      htmlFor="message" 
-                      className="block font-sans text-[9px] uppercase tracking-[0.3em] mb-4 text-[#B08D57] opacity-65 font-medium"
-                    >
-                      Your Message
-                    </label>
+                    <label htmlFor="message" className="block font-sans text-[9px] uppercase tracking-[0.3em] mb-4 text-[#B08D57] opacity-65 font-medium">Your Message</label>
                     <div className="flex items-start gap-3">
-                      <div className="text-[#B08D57]/50 mt-1.5">
-                        <MessageSquare size={14} strokeWidth={1.5} />
-                      </div>
+                      <div className="text-[#B08D57]/50 mt-1.5"><MessageSquare size={14} strokeWidth={1.5} /></div>
                       <textarea
                         id="message"
                         rows={3}
@@ -231,7 +216,6 @@ const handleSend = async (e: FormEvent) => {
                     </div>
                   </div>
 
-                  {/* Feedback Message */}
                   {status === "error" && (
                     <motion.div 
                       initial={{ opacity: 0, y: -5 }}
@@ -243,7 +227,6 @@ const handleSend = async (e: FormEvent) => {
                     </motion.div>
                   )}
 
-                  {/* Submit Button */}
                   <div className="pt-4">
                     <motion.button
                       whileHover={{ scale: 1.01 }}
@@ -265,7 +248,6 @@ const handleSend = async (e: FormEvent) => {
                           </>
                         )}
                       </span>
-                      {/* Subtlest premium slider reflection inside button */}
                       <div className="absolute inset-0 w-1/2 h-full bg-white/5 skew-x-12 -translate-x-full group-hover:animate-shine pointer-events-none" />
                     </motion.button>
                   </div>
@@ -276,7 +258,6 @@ const handleSend = async (e: FormEvent) => {
         </motion.div>
       </main>
 
-      {/* Footer (ESTABLISHED MCM... Look) */}
       <footer className="pb-12 pt-8 px-8 md:px-16 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-[#151515] z-10">
         <div>
           <p className="font-sans text-[9px] uppercase tracking-[0.35em] opacity-35 text-center md:text-left">
