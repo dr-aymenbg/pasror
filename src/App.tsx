@@ -113,25 +113,28 @@ export default function App() {
             )}
 
             {/* VIEW: SUCCESS (Tracking Code) */}
-  {/* VIEW: SUCCESS (Tracking Code) */}
+ {/* VIEW: SUCCESS (Tracking Code) */}
             {view === "success" || status === "success" ? (
               <motion.div key="success" className="text-center py-10 space-y-6">
-                <p className="text-xs uppercase tracking-[0.3em] text-[#B08D57]">Inquiry Conveyed</p>
+                <p className="text-sm uppercase tracking-[0.3em] text-[#B08D57]">Inquiry Conveyed</p>
                 <div className="text-5xl font-mono text-[#B08D57]">{trackingCode}</div>
                 
-                {/* التعليمات الجديدة باللغتين */}
+                {/* التعليمات الجديدة باللغتين (بحجم text-sm الواضح) */}
                 <div className="space-y-3 border-t border-[#1A1A1A] pt-6">
-                  <p className="text-[#B08D57] text-[10px] uppercase tracking-[0.2em]">
+                  <p className="text-[#B08D57] text-sm uppercase tracking-[0.2em]">
                     How to track / كيفية المتابعة
                   </p>
-                  <p className="text-stone-400 text-[10px] leading-relaxed max-w-[280px] mx-auto">
+                  <p className="text-stone-400 text-sm leading-relaxed max-w-[280px] mx-auto">
                     Keep this code safe. Return to "Track Status" later and enter it to view your response.
                     <br />
                     <span className="text-stone-500">احتفظ بهذا الكود. عُد إلى صفحة "متابعة الحالة" لاحقاً وأدخله للاطلاع على الرد.</span>
                   </p>
                 </div>
 
-                <button onClick={() => { setStatus("idle"); setView("form"); }} className="underline text-[10px] uppercase tracking-[0.2em] text-white hover:text-[#B08D57] transition-colors">
+                <button 
+                  onClick={() => { setStatus("idle"); setView("form"); }} 
+                  className="underline text-sm uppercase tracking-[0.2em] text-white hover:text-[#B08D57] transition-colors"
+                >
                   Back / عودة
                 </button>
               </motion.div>
