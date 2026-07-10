@@ -16,7 +16,7 @@ export default function App() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-const handleSend = async (e: FormEvent) => {
+  const handleSend = async (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !message.trim()) {
       setStatus("error");
@@ -28,33 +28,35 @@ const handleSend = async (e: FormEvent) => {
     setErrorMessage("");
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
+      // الربط المباشر مع جدول messages في مشروع السوبابيز الخاص بك
+      const response = await fetch("https://azbgzkuykdzjzoqftpba.supabase.co/rest/v1/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
+          // تنبيه: ضع مفتاحك الذي يبدأ بـ sb_publishable في السطرين بالأسفل بدلاً من النص المكتوب
+"apikey": "sb_publishable_-hLlJZwE83Fs908be1o1Xg_aSu_WZfj",
+        "Authorization": "Bearer sb_publishable_-hLlJZwE83Fs908be1o1Xg_aSu_WZfj",        },
         body: JSON.stringify({
-          access_key: "694d4f9e-a27a-40ee-8b6f-7a62e40d279e",
           name: name,
           message: message,
+          tracking_code: "PRESTIGE-" + Math.floor(10000 + Math.random() * 90000), // توليد كود تتبع تلقائي فخم يناسب ثيم موقعك
         }),
       });
 
-      const result = await response.json();
-      if (result.success) {
+      if (response.ok) {
         setStatus("success");
         setName("");
         setMessage("");
       } else {
         setStatus("error");
-        setErrorMessage("Something went wrong.");
+        setErrorMessage("Something went wrong with the server.");
       }
     } catch (error) {
       setStatus("error");
       setErrorMessage("Connection failed.");
     }
   };
+
   return (
     <div className="min-h-screen flex flex-col justify-between selection:bg-gold-classic/30 selection:text-white bg-[#0A0A0A] text-[#E5E5E5] relative overflow-hidden font-sans border-[8px] md:border-[16px] border-[#151515]">
       
