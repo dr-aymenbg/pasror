@@ -113,15 +113,29 @@ export default function App() {
             )}
 
             {/* VIEW: SUCCESS (Tracking Code) */}
+  {/* VIEW: SUCCESS (Tracking Code) */}
             {view === "success" || status === "success" ? (
               <motion.div key="success" className="text-center py-10 space-y-6">
                 <p className="text-xs uppercase tracking-[0.3em] text-[#B08D57]">Inquiry Conveyed</p>
                 <div className="text-5xl font-mono text-[#B08D57]">{trackingCode}</div>
-                <p className="text-stone-400 text-xs">Keep this code to track your status.</p>
-                <button onClick={() => { setStatus("idle"); setView("form"); }} className="underline text-xs text-white">Back to form</button>
+                
+                {/* التعليمات الجديدة باللغتين */}
+                <div className="space-y-3 border-t border-[#1A1A1A] pt-6">
+                  <p className="text-[#B08D57] text-[10px] uppercase tracking-[0.2em]">
+                    How to track / كيفية المتابعة
+                  </p>
+                  <p className="text-stone-400 text-[10px] leading-relaxed max-w-[280px] mx-auto">
+                    Keep this code safe. Return to "Track Status" later and enter it to view your response.
+                    <br />
+                    <span className="text-stone-500">احتفظ بهذا الكود. عُد إلى صفحة "متابعة الحالة" لاحقاً وأدخله للاطلاع على الرد.</span>
+                  </p>
+                </div>
+
+                <button onClick={() => { setStatus("idle"); setView("form"); }} className="underline text-[10px] uppercase tracking-[0.2em] text-white hover:text-[#B08D57] transition-colors">
+                  Back / عودة
+                </button>
               </motion.div>
             ) : null}
-
             {/* VIEW: TRACKER */}
             {view === "tracker" && (
               <motion.div key="tracker" className="space-y-6">
